@@ -629,13 +629,19 @@ body {
 
 }
 body {
-    background: yellow !important;
+    background: #F5F3ED !important;
 }
 
 .game-container {
-    background: blue !important;
+    background: #718675 !important;
+    border: 1px solid #D8DED5;
+    box-shadow: 0 12px 30px rgba(41, 55, 47, 0.10);
 }
 
 .start-page h1 {
-    color: red !important;
+    color: #FFFFFF !important;
+}
+
+.start-page .deskripsi {
+    color: #F0F3EE !important;
 }

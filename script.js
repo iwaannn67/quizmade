@@ -453,4 +453,213 @@ function tampilkanHasil() {
         }
     );
 
+/* ==================================
+   QUIZMADE AUDIO SYSTEM
+   Musik background + sound effects
+================================== */
+
+(() => {
+    // Mencegah sistem audio dipasang dua kali
+    if (window.quizMadeAudioLoaded) return;
+    window.quizMadeAudioLoaded = true;
+
+    let audioContext;
+    let musicTimer = null;
+    let musicIndex = 0;
+    let musicOn = false;
+
+    function getAudioContext() {
+        if (!audioContext) {
+            const AudioContextClass =
+                window.AudioContext || window.webkitAudioContext;
+
+            if (!AudioContextClass) return null;
+
+            audioContext = new AudioContextClass();
+        }
+
+        if (audioContext.state === "suspended") {
+            audioContext.resume();
+        }
+
+        return audioContext;
+    }
+
+    // Membuat satu nada dengan volume yang lembut
+    function playTone(
+        frequency,
+        duration = 0.2,
+        volume = 0.04,
+        type = "sine"
+    ) {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+
+        const oscillator = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        oscillator.type = type;
+        oscillator.frequency.value = frequency;
+
+        gain.gain.setValueAtTime(0.001, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(
+            volume,
+            ctx.currentTime + 0.025
+        );
+        gain.gain.exponentialRampToValueAtTime(
+            0.001,
+            ctx.currentTime + duration
+        );
+
+        oscillator.connect(gain);
+        gain.connect(ctx.destination);
+
+        oscillator.start();
+        oscillator.stop(ctx.currentTime + duration + 0.03);
+    }
+
+    // Sound effect tombol
+    function clickSound() {
+        playTone(650, 0.07, 0.025, "sine");
+    }
+
+    // Sound effect jawaban benar
+    function correctSound() {
+        playTone(523.25, 0.16, 0.045, "sine");
+
+        setTimeout(() => {
+            playTone(659.25, 0.16, 0.045, "sine");
+        }, 100);
+
+        setTimeout(() => {
+            playTone(783.99, 0.28, 0.05, "sine");
+        }, 200);
+    }
+
+    // Sound effect jawaban salah
+    function wrongSound() {
+        playTone(300, 0.20, 0.035, "triangle");
+
+        setTimeout(() => {
+            playTone(220, 0.28, 0.035, "triangle");
+        }, 140);
+    }
+
+    // Musik background santai
+    const musicChords = [
+        [261.63, 329.63, 392.00],
+        [220.00, 261.63, 329.63],
+        [174.61, 220.00, 261.63],
+        [196.00, 246.94, 293.66]
+    ];
+
+    function playMusicChord() {
+        if (!musicOn) return;
+
+        const chord = musicChords[musicIndex % musicChords.length];
+
+        chord.forEach((frequency, index) => {
+            setTimeout(() => {
+                if (musicOn) {
+                    playTone(frequency, 1.7, 0.009, "sine");
+                }
+            }, index * 100);
+        });
+
+        // Nada melodi ringan
+        const melody = [523.25, 493.88, 440.00, 392.00];
+
+        playTone(melody[musicIndex % melody.length], 0.55, 0.012);
+
+        musicIndex++;
+    }
+
+    function startMusic() {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+
+        musicOn = true;
+        playMusicChord();
+
+        if (musicTimer) clearInterval(musicTimer);
+
+        musicTimer = setInterval(playMusicChord, 1900);
+
+        musicButton.textContent = "♫ Musik: ON";
+        musicButton.style.background = "#29372F";
+    }
+
+    function stopMusic() {
+        musicOn = false;
+
+        if (musicTimer) {
+            clearInterval(musicTimer);
+            musicTimer = null;
+        }
+
+        musicButton.textContent = "♫ Musik: OFF";
+        musicButton.style.background = "#718675";
+    }
+
+    // Tombol musik otomatis dibuat oleh JavaScript
+    const musicButton = document.createElement("button");
+
+    musicButton.id = "quizMadeMusicButton";
+    musicButton.type = "button";
+    musicButton.textContent = "♫ Musik: OFF";
+
+    Object.assign(musicButton.style, {
+        position: "fixed",
+        right: "16px",
+        bottom: "16px",
+        zIndex: "9999",
+        padding: "12px 16px",
+        border: "none",
+        borderRadius: "30px",
+        background: "#718675",
+        color: "#ffffff",
+        fontSize: "14px",
+        fontWeight: "bold",
+        boxShadow: "0 4px 14px rgba(0,0,0,0.15)",
+        cursor: "pointer"
+    });
+
+    document.body.appendChild(musicButton);
+
+    musicButton.addEventListener("click", () => {
+        if (musicOn) {
+            stopMusic();
+        } else {
+            startMusic();
+        }
+    });
+
+    // Sound effect tombol dan pilihan jawaban
+    document.addEventListener("click", event => {
+        const button = event.target.closest("button");
+
+        if (!button || button === musicButton) return;
+
+        clickSound();
+
+        // Memeriksa jawaban setelah kode kuis memproses pilihan
+        if (button.matches(".pilihan")) {
+            setTimeout(() => {
+                if (
+                    button.classList.contains("benar") ||
+                    button.querySelector(".benar")
+                ) {
+                    correctSound();
+                } else if (
+                    button.classList.contains("salah") ||
+                    button.querySelector(".salah")
+                ) {
+                    wrongSound();
+                }
+            }, 150);
+        }
+    }, true);
+
+})();
+
 }

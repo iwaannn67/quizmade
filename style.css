@@ -628,6 +628,9 @@ body {
     }
 
 }
+
+/* TEMA CREAM DAN HIJAU SAGE */
+
 body {
     background: #F5F3ED !important;
 }
@@ -644,4 +647,46 @@ body {
 
 .start-page .deskripsi {
     color: #F0F3EE !important;
+}
+
+.top-label {
+    background: #E6EBE3;
+    color: #405747;
+    border-color: #D8DED5;
+}
+
+.quiz-icon {
+    background: #29372F;
+}
+
+.quiz-icon span {
+    color: #FFFFFF;
+}
+
+.game-info {
+    background: #F8F7F2;
+    border-color: #D8DED5;
+}
+
+.info-item strong {
+    color: #29372F;
+}
+
+.info-item span {
+    color: #718075;
+}
+
+#mulaiBtn,
+#mainLagiBtn {
+    background: #29372F !important;
+    color: #FFFFFF !important;
+}
+
+#mulaiBtn:hover,
+#mainLagiBtn:hover {
+    background: #3D5144 !important;
+}
+
+.start-note {
+    color: #F0F3EE;
 }

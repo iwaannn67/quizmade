@@ -331,6 +331,10 @@ function cekJawaban(
 
         tombolDipilih.classList.add("benar");
 
+        if (window.quizMadeCorrectSound) {
+        window.quizMadeCorrectSound();
+    }
+
         feedback.textContent =
             "Benar! +10 poin";
 
@@ -339,6 +343,10 @@ function cekJawaban(
     } else {
 
         tombolDipilih.classList.add("salah");
+
+        if (window.quizMadeWrongSound) {
+        window.quizMadeWrongSound();
+    }
 
         feedback.textContent =
             "Kurang tepat.";
@@ -452,7 +460,8 @@ function tampilkanHasil() {
 
         }
     );
-
+    
+}
 /* ==================================
    QUIZMADE AUDIO SYSTEM
    Musik background + sound effects
@@ -634,31 +643,23 @@ function tampilkanHasil() {
         }
     });
 
-    // Sound effect tombol dan pilihan jawaban
+    
+    // Sound effect tombol biasa
     document.addEventListener("click", event => {
         const button = event.target.closest("button");
 
         if (!button || button === musicButton) return;
 
-        clickSound();
+        // Pilihan jawaban ditangani terpisah
+        if (button.matches(".jawaban")) return;
 
-        // Memeriksa jawaban setelah kode kuis memproses pilihan
-        if (button.matches(".jawaban")) {
-            setTimeout(() => {
-                if (
-                    button.classList.contains("benar") ||
-                    button.querySelector(".benar")
-                ) {
-                    correctSound();
-                } else if (
-                    button.classList.contains("salah") ||
-                    button.querySelector(".salah")
-                ) {
-                    wrongSound();
-                }
-            }, 150);
-        }
+        clickSound();
     }, true);
 
+    // Menyediakan fungsi suara untuk kode kuis
+    window.quizMadeCorrectSound = correctSound;
+    window.quizMadeWrongSound = wrongSound;
+
 })();
+
 

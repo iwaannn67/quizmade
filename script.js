@@ -643,7 +643,7 @@ function tampilkanHasil() {
         clickSound();
 
         // Memeriksa jawaban setelah kode kuis memproses pilihan
-        if (button.matches(".pilihan")) {
+        if (button.matches(".jawaban")) {
             setTimeout(() => {
                 if (
                     button.classList.contains("benar") ||
@@ -662,4 +662,3 @@ function tampilkanHasil() {
 
 })();
 
-}
